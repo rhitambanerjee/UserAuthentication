@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
 
+
+//creating a schema for the users token
 const UserTokenSchema = mongoose.Schema({
   userId: {
     type: Schema.Types.ObjectId,
