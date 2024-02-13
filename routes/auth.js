@@ -7,17 +7,27 @@ const generateToken=require('../utils/generateToken');
 const {signUpBodyValidation,logInBodyValidation}=require('../utils/validationSchema');
 dotenv.config();
 
+
+// Route for user sign up
 router.get('/signUp',async(req,res)=>{
     try{
+
+        // Validating the request body for sign up
         const {error}=signUpBodyValidation(req.body);
         if(error){
             res.status(400).json({error: true, message: error.details[0].message});
         }
+
+        // Checking if a user with the provided email already exists
         const user=await User.findOne({email:req.body.email});
         if(user){
             res.status(400).json({error:true,message:"User with given email exists"});
         }
+
+        // Generating a salt for password hashing
         const salt=await bcrypt.genSalt(process.env.SALT);
+
+
         const hashPassword=await bcrypt.hash(req.body.password,salt);
         await new User({...req,password:hashPassword}).save();
         res.status(201).json({error:false,message:"User created successfully"});
@@ -27,8 +37,12 @@ router.get('/signUp',async(req,res)=>{
     }
 })
 
+
+// Route for user login
 router.get('/login',async(req,res)=>{
     try{
+
+        // Validating the request body for login
         const {error}=logInBodyValidation(req.body);
         if(error){
             return res.status(400).json({error:true,message:error.details[0].message});
@@ -37,6 +51,8 @@ router.get('/login',async(req,res)=>{
         if(!user){
             return res.status(401).json({error:true,message:"Invalid email or password"});
         }
+
+        // Comparing the provided password with the hashed password
         const verifypassword=bcrypt.compare(req.body.password,user.password);
         if(!verifypassword){
             return res.status(401).json({ error: true, message: "Invalid email or password" });
