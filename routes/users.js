@@ -2,6 +2,8 @@ const {Router}=require('express');
 const auth=require('../middleware/auth');
 const router=Router();
 
+
+//router to fetch data from api 
 router.get('/data',auth,async(req,res)=>{
     const url="https://jsonplaceholder.typicode.com/todos";
     try{
